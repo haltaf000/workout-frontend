@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box } from '@mui/material'; // Add this import
+import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -14,9 +14,20 @@ import WorkoutPlanDetailPage from './components/WorkoutPlanDetailPage';
 import WorkoutPlanFormPage from './components/WorkoutPlanFormPage';
 import NotFoundPage from './components/NotFoundPage';
 import { login, register, getCurrentUser } from './api/auth';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const theme = createTheme({
-  // Your theme configuration
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
 });
 
 function App() {
@@ -70,7 +81,11 @@ function App() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (
@@ -81,8 +96,8 @@ function App() {
           <Navbar user={user} onLogout={handleLogout} />
           <Box component="main" sx={{ flexGrow: 1 }}>
             <Routes>
-              {/* Public routes */}
               <Route path="/" element={<HomePage user={user} />} />
+              <Route path="/exercises" element={<ExercisesPage user={user} />} />
               <Route path="/login" element={
                 user ? <Navigate to="/" replace /> : 
                 <LoginPage onLogin={handleLogin} />
@@ -90,11 +105,6 @@ function App() {
               <Route path="/register" element={
                 user ? <Navigate to="/" replace /> : 
                 <RegisterPage onRegister={handleRegister} />
-              } />
-              
-              {/* Protected routes */}
-              <Route path="/exercises" element={
-                user ? <ExercisesPage /> : <Navigate to="/login" replace />
               } />
               <Route path="/workout-plans" element={
                 user ? <WorkoutPlansPage /> : <Navigate to="/login" replace />
@@ -105,8 +115,6 @@ function App() {
               <Route path="/workout-plans/:id" element={
                 user ? <WorkoutPlanDetailPage /> : <Navigate to="/login" replace />
               } />
-              
-              {/* Error handling */}
               <Route path="/404" element={<NotFoundPage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>

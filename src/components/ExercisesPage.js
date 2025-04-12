@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getExercises } from '../api/exercises';
 import { 
   Container, 
@@ -8,13 +9,12 @@ import {
   Chip,
   CircularProgress,
   Paper,
-  IconButton,
   Button,
-  Avatar
+  Avatar,
+  Grid
 } from '@mui/material';
-import { styled } from '@mui/material/styles'; // Add this import
+import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 
 const ExerciseCard = styled(Paper)(({ theme }) => ({
@@ -28,10 +28,11 @@ const ExerciseCard = styled(Paper)(({ theme }) => ({
   }
 }));
 
-const ExercisesPage = () => {
+const ExercisesPage = ({ user }) => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -67,17 +68,30 @@ const ExercisesPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography 
-        variant="h4" 
-        gutterBottom 
-        sx={{ 
-          mb: 3,
-          fontWeight: 700,
-          color: 'primary.main'
-        }}
-      >
-        Exercise Library
-      </Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 3 
+      }}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontWeight: 700,
+            color: 'primary.main'
+          }}
+        >
+          Exercise Library
+        </Typography>
+        {user && (
+          <Button 
+            variant="contained"
+            onClick={() => navigate('/workout-plans/new')}
+          >
+            Create Workout Plan
+          </Button>
+        )}
+      </Box>
       
       <TextField
         fullWidth
@@ -111,46 +125,44 @@ const ExercisesPage = () => {
           </Typography>
         </Paper>
       ) : (
-        <Box sx={{ 
-          display: 'grid', 
-          gap: 2,
-          gridTemplateColumns: { sm: '1fr', md: 'repeat(2, 1fr)' }
-        }}>
+        <Grid container spacing={2}>
           {filteredExercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} elevation={2}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar 
-                  src={`https://source.unsplash.com/random/100x100/?${exercise.muscle_group},exercise`}
-                  sx={{ 
-                    width: 60, 
-                    height: 60,
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText'
-                  }}
-                >
-                  {exercise.muscle_group.charAt(0)}
-                </Avatar>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    {exercise.name}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                    <Chip 
-                      label={exercise.muscle_group} 
-                      size="small" 
-                      color="primary"
-                      variant="outlined"
-                    />
-                    <Chip 
-                      label={`${exercise.sets}x${exercise.reps}`}
-                      size="small"
-                    />
+            <Grid item xs={12} sm={6} key={exercise.id}>
+              <ExerciseCard elevation={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar 
+                    src={`https://source.unsplash.com/random/100x100/?${exercise.muscle_group},exercise`}
+                    sx={{ 
+                      width: 60, 
+                      height: 60,
+                      backgroundColor: 'primary.main',
+                      color: 'primary.contrastText'
+                    }}
+                  >
+                    {exercise.muscle_group.charAt(0)}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {exercise.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                      <Chip 
+                        label={exercise.muscle_group} 
+                        size="small" 
+                        color="primary"
+                        variant="outlined"
+                      />
+                      <Chip 
+                        label={`${exercise.sets}x${exercise.reps}`}
+                        size="small"
+                      />
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </ExerciseCard>
+              </ExerciseCard>
+            </Grid>
           ))}
-        </Box>
+        </Grid>
       )}
     </Container>
   );

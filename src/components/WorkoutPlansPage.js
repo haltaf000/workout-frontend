@@ -19,6 +19,7 @@ import {
   MenuItem
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
 import { 
   Add as AddIcon, 
   FitnessCenter as FitnessCenterIcon,

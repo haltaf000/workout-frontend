@@ -57,6 +57,14 @@ const Navbar = ({ user, onLogout }) => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button 
+            component={Link} 
+            to="/exercises"
+            variant={location.pathname === '/exercises' ? 'contained' : 'text'}
+          >
+            Exercises
+          </Button>
+
           {user ? (
             <>
               <Button 
@@ -105,6 +113,7 @@ const Navbar = ({ user, onLogout }) => {
                 component={Link} 
                 to="/login"
                 variant={location.pathname === '/login' ? 'contained' : 'text'}
+                sx={{ ml: 2 }}
               >
                 Login
               </Button>

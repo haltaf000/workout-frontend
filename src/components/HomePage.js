@@ -1,15 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Divider } from '@mui/material';
-
 import { 
   Box, 
   Typography, 
   Button, 
   Container, 
-  Stack, 
+  Grid,
   Paper,
-  Avatar
+  Avatar,
+  CircularProgress
 } from '@mui/material';
 import { 
   FitnessCenter as FitnessCenterIcon,
@@ -21,7 +20,26 @@ import {
 const HomePage = ({ user }) => {
   const navigate = useNavigate();
 
-  const features = [
+  const features = user ? [
+    {
+      icon: <FitnessCenterIcon />,
+      title: "Your Workout Plans",
+      description: "View and manage your custom workout routines",
+      action: () => navigate('/workout-plans')
+    },
+    {
+      icon: <TimerIcon />,
+      title: "Track Progress",
+      description: "Monitor your fitness journey over time",
+      action: () => navigate('/progress')
+    },
+    {
+      icon: <TrendingUpIcon />,
+      title: "Exercise Library",
+      description: "Browse our collection of exercises",
+      action: () => navigate('/exercises')
+    }
+  ] : [
     {
       icon: <FitnessCenterIcon />,
       title: "Personalized Plans",
@@ -41,7 +59,6 @@ const HomePage = ({ user }) => {
 
   return (
     <Box sx={{ py: { xs: 4, md: 8 } }}>
-      {/* Hero Section */}
       <Container maxWidth="md" sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
         <Typography 
           variant="h1" 
@@ -52,7 +69,7 @@ const HomePage = ({ user }) => {
             lineHeight: 1.2
           }}
         >
-          Elevate Your Fitness Journey
+          {user ? `Welcome Back, ${user.username}!` : 'Elevate Your Fitness Journey'}
         </Typography>
         <Typography 
           variant="subtitle1" 
@@ -64,7 +81,7 @@ const HomePage = ({ user }) => {
             fontSize: { xs: '1rem', md: '1.125rem' }
           }}
         >
-          A minimalist approach to tracking workouts and achieving your fitness goals
+          {user ? 'Ready for your next workout?' : 'A minimalist approach to tracking workouts and achieving your fitness goals'}
         </Typography>
         <Button
           variant="contained"
@@ -82,55 +99,61 @@ const HomePage = ({ user }) => {
         </Button>
       </Container>
 
-      {/* Features Section */}
       <Container maxWidth="lg">
-        <Stack 
-          direction={{ xs: 'column', md: 'row' }} 
-          spacing={{ xs: 3, md: 4 }}
-          divider={<Divider orientation="vertical" flexItem />}
-          sx={{ mb: 10 }}
-        >
+        <Grid container spacing={3}>
           {features.map((feature, index) => (
-            <Paper 
-              key={index}
-              elevation={0}
-              sx={{
-                p: 3,
-                textAlign: 'center',
-                flex: 1,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: '12px',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  borderColor: 'primary.main'
-                }
-              }}
-            >
-              <Avatar sx={{ 
-                bgcolor: 'transparent', 
-                color: 'primary.main',
-                width: 56, 
-                height: 56,
-                mb: 2,
-                mx: 'auto'
-              }}>
-                {feature.icon}
-              </Avatar>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                {feature.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {feature.description}
-              </Typography>
-            </Paper>
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Paper 
+                elevation={0}
+                sx={{
+                  p: 3,
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: '12px',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    cursor: feature.action ? 'pointer' : 'default'
+                  }
+                }}
+                onClick={feature.action}
+              >
+                <Avatar sx={{ 
+                  bgcolor: 'transparent', 
+                  color: 'primary.main',
+                  width: 56, 
+                  height: 56, 
+                  mb: 2,
+                  mx: 'auto'
+                }}>
+                  {feature.icon}
+                </Avatar>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {feature.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {feature.description}
+                </Typography>
+                {feature.action && (
+                  <Button 
+                    size="small" 
+                    endIcon={<ArrowForwardIcon />} 
+                    sx={{ mt: 2, alignSelf: 'flex-start' }}
+                  >
+                    Explore
+                  </Button>
+                )}
+              </Paper>
+            </Grid>
           ))}
-        </Stack>
+        </Grid>
       </Container>
 
-      {/* CTA Section */}
       {!user && (
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" sx={{ mt: 8 }}>
           <Paper 
             elevation={0}
             sx={{
@@ -148,7 +171,7 @@ const HomePage = ({ user }) => {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Join our community of fitness enthusiasts today
             </Typography>
-            <Stack direction="row" spacing={2} justifyContent="center">
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Button
                 variant="outlined"
                 onClick={() => navigate('/login')}
@@ -163,7 +186,7 @@ const HomePage = ({ user }) => {
               >
                 Create Account
               </Button>
-            </Stack>
+            </Box>
           </Paper>
         </Container>
       )}
